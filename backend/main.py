@@ -5,9 +5,9 @@ from pydantic import BaseModel
 from contextlib import asynccontextmanager
 from sqlmodel import Session, select
 
-from .database import create_db_and_tables, engine
-from .models import Conversation
-from .agent import AgentRunner
+from database import create_db_and_tables, engine
+from models import Conversation
+from agent import AgentRunner
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

@@ -2,8 +2,8 @@ from mcp.server.fastmcp import FastMCP
 from sqlmodel import Session, select
 from datetime import datetime
 from typing import Optional, List, Dict, Any
-from .models import Task
-from .database import engine
+from models import Task
+from database import engine
 
 # Create the MCP server
 mcp_server = FastMCP("Todo Task Manager")

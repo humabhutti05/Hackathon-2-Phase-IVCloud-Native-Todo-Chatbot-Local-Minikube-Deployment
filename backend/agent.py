@@ -2,9 +2,9 @@ import os
 import json
 from typing import List, Dict, Any
 from openai import OpenAI
-from .mcp_server import get_mcp_tool_schemas, get_mcp_tool_callable
-from .models import Message
-from .database import engine
+from mcp_server import get_mcp_tool_schemas, get_mcp_tool_callable
+from models import Message
+from database import engine
 from sqlmodel import Session, select
 
 # Gemini / OpenAI Client configuration
