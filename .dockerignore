@@ -1,0 +1,14 @@
+# .dockerignore
+node_modules
+.next
+.git
+.venv
+__pycache__
+*.pyc
+.env
+.env.local
+local_db.sqlite
+local_db_v2.sqlite
+coverage
+build
+dist

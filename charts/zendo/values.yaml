@@ -1,0 +1,51 @@
+# Default values for zendo.
+
+# Frontend Service (Next.js)
+frontend:
+  name: zendo-frontend
+  replicaCount: 2
+  image:
+    repository: zendo-frontend
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  service:
+    type: NodePort
+    port: 3000
+    nodePort: 30000
+    targetPort: 3000
+  env:
+    # URL exposed to the browser to reach the backend
+    apiUrl: "http://localhost:30001"
+
+# Backend Service (FastAPI)
+backend:
+  name: zendo-backend
+  replicaCount: 2
+  image:
+    repository: zendo-backend
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  service:
+    type: NodePort
+    port: 8000
+    nodePort: 30001
+    targetPort: 8000
+  env:
+    openaiApiKey: "your-api-key-here"
+
+# Database Service (Postgres)
+db:
+  name: zendo-db
+  image:
+    repository: postgres
+    tag: "15-alpine"
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 5432
+  storage:
+    size: 1Gi
+  auth:
+    username: zendo
+    password: zendopassword
+    database: zendodb

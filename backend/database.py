@@ -9,7 +9,7 @@ if not DATABASE_URL:
     # Fallback to sqlite for local dev if no URL provided
     DATABASE_URL = "sqlite:///./local_db.sqlite"
 
-engine = create_engine(DATABASE_URL, echo=True)
+engine = create_engine(DATABASE_URL, echo=False)
 
 def create_db_and_tables():
     SQLModel.metadata.create_all(engine)

@@ -1,0 +1,6 @@
+apiVersion: v2
+name: zendo
+description: A Helm chart for Zendo Cloud Native App (Frontend, Backend, Postgres)
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

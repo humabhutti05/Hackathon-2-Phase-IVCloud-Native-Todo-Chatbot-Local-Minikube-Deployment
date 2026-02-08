@@ -7,7 +7,10 @@ class Task(SQLModel, table=True):
     user_id: str = Field(index=True)
     title: str
     description: Optional[str] = None
+    status: str = Field(default="To Do") # "To Do", "In Progress", "Done"
+    priority: str = Field(default="Medium") # "Low", "Medium", "High"
     completed: bool = False
+    due_date: Optional[datetime] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 

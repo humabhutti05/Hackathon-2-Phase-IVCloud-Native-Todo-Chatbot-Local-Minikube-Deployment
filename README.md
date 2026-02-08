@@ -51,5 +51,4 @@ It follows a stateless Agentic architecture where the conversational state is pe
 - **Agent**: Uses `openai` SDK to effectively call Gemini models (or generic OpenAI models).
 - **Tools**: `add_task`, `list_tasks`, `complete_task`, `delete_task`, `update_task`.
 
-## Author
-Implementation by Antigravity Agent.
+

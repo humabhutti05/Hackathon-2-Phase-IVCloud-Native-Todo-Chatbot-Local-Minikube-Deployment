@@ -1,0 +1,38 @@
+# Default values for todo-chatbot.
+
+frontend:
+  name: frontend
+  replicaCount: 2
+  image:
+    repository: todo-frontend
+    pullPolicy: IfNotPresent
+    tag: "latest"
+  service:
+    type: ClusterIP
+    port: 3000
+    # Provide the external URL for the API if needed, or leave blank to rely on internal K8s DNS if SSR
+    # In a real scenario, this matches the ingress or service URL of the backend
+    apiUrl: "http://todo-chatbot-backend:8000" 
+
+backend:
+  name: backend
+  replicaCount: 2
+  image:
+    repository: todo-backend
+    pullPolicy: IfNotPresent
+    tag: "latest"
+  service:
+    type: ClusterIP
+    port: 8000
+  env:
+    # Example environment variables
+    databaseUrl: "sqlite:///./local_db.sqlite" # Override this locally or via secrets
+
+ingress:
+  enabled: false
+  className: ""
+  hosts:
+    - host: todo.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific

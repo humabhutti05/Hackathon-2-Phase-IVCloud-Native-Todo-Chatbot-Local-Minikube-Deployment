@@ -9,24 +9,40 @@ from database import engine
 mcp_server = FastMCP("Todo Task Manager")
 
 @mcp_server.tool()
-def add_task(user_id: str, title: str, description: str = "") -> str:
-    """Create a new task for the given user"""
+def add_task(user_id: str, title: str, description: str = "", status: str = "To Do", priority: str = "Medium", due_date: Optional[str] = None) -> str:
+    """Create a new task for the given user. status: 'To Do', 'In Progress', 'Done'. priority: 'Low', 'Medium', 'High'. due_date: ISO string like '2024-12-31'"""
     with Session(engine) as session:
-        task = Task(user_id=user_id, title=title, description=description)
+        parsed_date = None
+        if due_date:
+            try:
+                parsed_date = datetime.fromisoformat(due_date.split('T')[0])
+            except:
+                pass
+        
+        task = Task(
+            user_id=user_id, 
+            title=title, 
+            description=description, 
+            status=status, 
+            priority=priority,
+            due_date=parsed_date
+        )
         session.add(task)
         session.commit()
         session.refresh(task)
-        return f"Task '{task.title}' created with ID {task.id}"
+        return f"Task '{task.title}' created with ID {task.id} (Status: {task.status}, Priority: {task.priority})"
 
 @mcp_server.tool()
 def list_tasks(user_id: str, status: str = "all") -> str:
-    """Retrieve tasks for a user. status can be 'all', 'pending', or 'completed'"""
+    """Retrieve tasks for a user. status can be 'all', 'pending', 'completed', 'To Do', 'In Progress', 'Done'"""
     with Session(engine) as session:
         statement = select(Task).where(Task.user_id == user_id)
         if status == "pending":
             statement = statement.where(Task.completed == False)
         elif status == "completed":
             statement = statement.where(Task.completed == True)
+        elif status in ["To Do", "In Progress", "Done"]:
+            statement = statement.where(Task.status == status)
         
         results = session.exec(statement).all()
         if not results:
@@ -35,7 +51,8 @@ def list_tasks(user_id: str, status: str = "all") -> str:
         output = []
         for task in results:
             status_str = "✅" if task.completed else "⏳"
-            output.append(f"[{task.id}] {status_str} {task.title}: {task.description or 'No description'}")
+            date_str = f" [Due: {task.due_date.date()}]" if task.due_date else ""
+            output.append(f"[{task.id}] {status_str} {task.title} ({task.status} | {task.priority}){date_str}: {task.description or 'No description'}")
         
         return "\n".join(output)
 
@@ -67,8 +84,8 @@ def delete_task(user_id: str, task_id: int) -> str:
         return f"Task '{title}' (ID {task_id}) deleted successfully"
 
 @mcp_server.tool()
-def update_task(user_id: str, task_id: int, title: Optional[str] = None, description: Optional[str] = None) -> str:
-    """Update title or description of an existing task"""
+def update_task(user_id: str, task_id: int, title: Optional[str] = None, description: Optional[str] = None, status: Optional[str] = None, priority: Optional[str] = None, due_date: Optional[str] = None) -> str:
+    """Update task details. status: 'To Do', 'In Progress', 'Done'. priority: 'Low', 'Medium', 'High'. due_date: ISO string"""
     with Session(engine) as session:
         task = session.get(Task, task_id)
         if not task or task.user_id != user_id:
@@ -76,6 +93,17 @@ def update_task(user_id: str, task_id: int, title: Optional[str] = None, descrip
         
         if title: task.title = title
         if description: task.description = description
+        if status: 
+            task.status = status
+            if status == "Done":
+                task.completed = True
+        if priority: task.priority = priority
+        if due_date:
+            try:
+                task.due_date = datetime.fromisoformat(due_date.split('T')[0])
+            except:
+                pass
+                
         task.updated_at = datetime.utcnow()
         
         session.add(task)
