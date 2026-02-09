@@ -13,8 +13,10 @@ def run_agent(user_id: str, conversation_id: int, new_message: str):
     if not api_key:
         return {"conversation_id": conversation_id, "response": "Error: GOOGLE_API_KEY not found", "tool_calls": []}
     
-    client = genai.Client(api_key=api_key)
-    model_id = 'gemini-2.5-flash'
+    # Specify version v1 for stable model access
+    client = genai.Client(api_key=api_key, http_options={'api_version': 'v1'})
+    # Using the standard model ID
+    model_id = 'gemini-1.5-flash' 
 
     # 2. Store User Message
     with Session(engine) as session:
@@ -66,6 +68,10 @@ def run_agent(user_id: str, conversation_id: int, new_message: str):
         genai_history = []
         for msg in history_objs[:-1]: # exclude the latest user message which we will send
             role = 'user' if msg.role == 'user' else 'model'
+            # Map 'assistant' role from DB to 'model' for Gemini
+            if msg.role == 'assistant':
+                role = 'model'
+            
             genai_history.append(types.Content(role=role, parts=[types.Part.from_text(text=msg.content)]))
 
         # Start Chat

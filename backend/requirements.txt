@@ -6,4 +6,4 @@ openai
 pydantic
 python-dotenv
 mcp
-google-generativeai
+google-genai
